@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  django:
+    restart: always
+    build: ./django
+    volumes:
+      - ./django:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    # command: ./manage.py runserver 0.0.0.0:8000 # "$DJANGO_COMMAND_FILE $DJANGO_COMMAND_ARGS"
+  nuxt:
+    build: ./nuxt
+    ports:
+      - "8900:80"
