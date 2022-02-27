@@ -25,13 +25,15 @@ class Recipe(models.Model):
 
 class Image(models.Model):
     """An image associated with a recipe"""
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, null=True, related_name='images')
     image = models.FileField(upload_to=recipe_image_file_path)
 
 
 class Step(models.Model):
     """An individual step in a recipe"""
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
     step = models.TextField()
 
