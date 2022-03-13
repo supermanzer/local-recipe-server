@@ -31,24 +31,30 @@
                            </v-list-item-action>
                        </v-list-item>
                  </v-list>
-                 <v-divider class="my-4"></v-divider>
-                <v-row>
-                    <v-col>
-                        <v-form>
-                            <v-textarea
-                            v-model="response"
-                            >
-
-                            </v-textarea>
-                        </v-form>
-                    </v-col>
-                </v-row>
              </v-card-text>
-             <v-card-actions class="ma-8" justify="center" align="center">
-                   <v-btn color="grey" @click="$router.push('/recipes')">Cancel</v-btn>
-                   <v-spacer></v-spacer>
-                   <v-btn color="green" @click="createRecipe()">Create</v-btn>
+             <v-card-actions class="pa-8" justify="center" align="center">
+                 <v-row v-if="!hasResponse" class="d-flex justify-space-around" >
+                     <v-btn color="cancel" @click="$router.push('/recipes')">Cancel</v-btn>
+                   
+                    <v-btn color="success" @click="createRecipe()">Create</v-btn>
+                 </v-row>
              </v-card-actions>
+         </v-card>
+         <v-card v-if="hasResponse" light>
+             <v-card-title>
+                 <span class="headline">Recipe Created</span>
+             </v-card-title>
+             <v-card-text>
+                 <span class="subtitle">Review/edit the text below before confirming this recipe</span>
+                <v-divider class="my-4"></v-divider>
+               <create-form
+                            :recipe="response"
+                            @update:recipe="updateRecipe"
+                            @reset:recipe="resetForm"
+                            @confirm:recipe="saveRecipe"
+                       ></create-form>
+             </v-card-text>
+
          </v-card>
      </v-col>
  </v-row>
@@ -59,8 +65,13 @@ export default {
    name: 'CreateRecipe',
    data: () => ({
        files: [],
-       response: '',
+       response: null,
    }),
+   computed: {
+      hasResponse() {
+        return this.response !== null;
+      } 
+    },
    methods: {
        onFileChange(e) {
            this.files = e;
@@ -68,13 +79,41 @@ export default {
        removeFile(index) {
            this.files.splice(index, 1);
        },
-       async createRecipe() {
-              const response = await this.$http.$post('/recipes/', {
-                files: this.files,
-              });
-              this.response = JSON.stringify(response)
+       createRecipe() {
+            const formData = new FormData();
+            this.files.forEach(file => {
+                formData.append('files', file);
+            });
+            this.$axios.post('/recipes/',formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            ).then((result) => {
+                this.response = result.data
+            }).catch((err) => {
+                /* eslint no-console: off */
+                console.error(err)
+            });
+            
          },
-       
-    }
+       updateRecipe(recipe) {
+           this.response = recipe
+       },
+       resetForm() {
+           this.response = null;
+           this.files  = [];
+           this.$refs.finput.clearableCallback();
+       },
+       async saveRecipe() {
+           await this.$http.$post('/recipes/confirm/', {
+               recipe_json: this.response,
+           });
+           
+           this.$router.push('/recipes');
+           
+       }
+    },
 }
 </script>

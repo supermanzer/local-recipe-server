@@ -24,9 +24,10 @@ def build_text_list(image_paths: list) -> list:
         Build a list of text snippets from a list of image paths.
     """
     text_list = []
-    for image_path in image_paths:
-        text = extract_text_from_image(image_path)
-        text_list.append(text)
+    if image_paths:
+        for image_path in image_paths:
+            text = extract_text_from_image(image_path)
+            text_list.append(text)
     return text_list
 
 

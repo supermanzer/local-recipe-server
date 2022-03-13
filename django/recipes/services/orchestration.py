@@ -8,7 +8,7 @@ from logging import getLogger
 from .image_ocr import load_images_return_text
 from .text_assignment import assign_text_to_recipe
 
-from recipes.models import Recipe, Step, Ingredient
+from recipes.models import Recipe, RecipeIngredient, Step, Ingredient
 
 logger = getLogger(__name__)
 
@@ -32,10 +32,20 @@ def create_recipe_records(recipe_json: dict) -> dict:
     logger.info(
         'Creating recipe records from recipe json: {}'.format(recipe_json))
 
-    recipe_id = 12
-    # recipe = Recipe.objects.create(
-    #     name=recipe_json['name'],
-    #     steps=recipe_json['steps'],
-    # )
+    # recipe_id = 12
+    recipe = Recipe.objects.create(
+        name=recipe_json['title'],
+        steps=recipe_json['steps'],
+    )
+    for ingredient in recipe_json["ingredients"]:
+        ingredient_record = Ingredient.objects.create(
+            name=ingredient['name'],
+        )
+        RecipeIngredient(
+            recipe=recipe,
+            ingredient=ingredient_record,
+            amount=ingredient['quantity'],
+            unit=ingredient['unit'],
+        )
 
-    return recipe_id
+    return recipe.id

@@ -27,7 +27,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: ['~/plugins/http'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -46,8 +46,13 @@ export default {
     '@nuxt/content',
     // https://http.nuxtjs.org/
     '@nuxt/http',
+    // https://axios.nuxtjs.org/
+    '@nuxtjs/axios',
   ],
   http: {
+    baseURL: 'http://localhost:8000',
+  },
+  axios: {
     baseURL: 'http://localhost:8000',
   },
 
@@ -68,6 +73,7 @@ export default {
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
+          cancel: colors.grey.lighten1,
         },
       },
     },

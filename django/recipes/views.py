@@ -21,13 +21,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecipeSerializer
 
     def create(self, request):
-        logger.info('Creating recipe from request: {}'.format(request))
+        logger.info('Creating recipe from request: {}'.format(request.data))
         file_paths = request.data.get('files')
         text = create_recipe_json(file_paths)
         return Response(text)
 
     @action(detail=False, methods=["POST"], name="Confirm Recipe")
-    def confirm_recipe(self, request, pk=None):
+    def confirm(self, request, pk=None):
+        logger.info('Confirming recipe: {}'.format(request.data))
         recipe_data = request.data['recipe_json']
         recipe_id = create_recipe_records(recipe_data)
         return Response({'recipe_id': recipe_id})

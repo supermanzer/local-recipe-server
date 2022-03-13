@@ -16,7 +16,16 @@ def assign_text_to_recipe(full_text: str) -> dict:
     logger.info('Assigning text to recipe: {}'.format(full_text))
 
     return {
-        'title': '',
-        'ingredients': [],
-        'steps': []
+        'title': "Mama Tucci's Pasta",
+        'ingredients': [
+            {'number': 1, 'name': 'Flour', 'quantity': '2', 'unit': 'cups'},
+            {'number': 2, 'name': 'Eggs (whipped)',
+             'quantity': '2', 'unit': ''},
+            {'number': 3, 'name': 'Salt', 'quantity': '1', 'unit': 'teaspoon'},
+        ],
+        'steps': [
+            {'number': 1, 'text': 'Mix flour and salt in a bowl.'},
+            {'number': 2, 'text': 'Create a well in the center of the bowl.'},
+            {'number': 3, 'text': 'Pour egg mixture into the well.'},
+        ]
     }
