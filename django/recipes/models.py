@@ -40,7 +40,16 @@ class Step(models.Model):
 
 class Ingredient(models.Model):
     """An individual ingredient."""
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return self.name
 
 
 class RecipeIngredient(models.Model):

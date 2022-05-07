@@ -1,6 +1,5 @@
-Default.vue
 <template>
- <v-app :theme="theme">
+ <v-app >
    <v-main>
      <v-container>
        <Nuxt />
@@ -12,7 +11,7 @@ Default.vue
 <script>
 export default {
  data: () => ({
-   theme: 'dark'
+   theme: 'light'
  }),
  head: {
    title: 'Recipes'
