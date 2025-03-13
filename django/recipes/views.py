@@ -25,6 +25,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecipeSerializer
     search_fields = ['name', ]
     filterset_fields = ['ingredients', ]
+    ordering_fields = ['created_at', 'modified_at']
 
     def create(self, request):
         files = list(request.data.pop('files'))

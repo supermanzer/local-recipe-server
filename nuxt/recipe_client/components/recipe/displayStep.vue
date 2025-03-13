@@ -2,7 +2,7 @@
   <v-card class="mx-auto d-block my-6" hidden>
       <v-toolbar color="grey lighten-2" dense>
           <v-toolbar-title>
-              Step {{step.number}}
+              Step {{step.order}}
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon>
@@ -13,7 +13,7 @@
       </v-toolbar>
       <v-divider vertical class="px-3"></v-divider>
       <article class="px-10">
-          {{step.text}}
+          {{step.step}}
       </article>
   </v-card>
 </template>
