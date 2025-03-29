@@ -10,9 +10,10 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    # command: ./manage.py runserver 0.0.0.0:8000 # "$DJANGO_COMMAND_FILE $DJANGO_COMMAND_ARGS"
   nuxt:
     restart: always
     build: ./nuxt
     ports:
       - "8900:80"
+    env_file:
+      - .env

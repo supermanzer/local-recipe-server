@@ -50,10 +50,10 @@ export default {
     '@nuxtjs/axios',
   ],
   http: {
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://localhost:8123',
   },
   axios: {
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://localhost:8123',
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content

@@ -4,7 +4,7 @@
 #
 
 # Build stage
-FROM node:latest as build-stage
+FROM node:latest AS build-stage
 RUN mkdir /app
 WORKDIR /app
 COPY recipe_client/package*.json /app/
