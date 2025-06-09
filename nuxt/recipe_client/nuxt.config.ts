@@ -20,7 +20,7 @@ export default defineNuxtConfig({
         config.plugins.push(vuetify({ autoImport: true }))
       })
     },
-    //...
+    '@vueuse/nuxt',
   ],
   vite: {
     vue: {

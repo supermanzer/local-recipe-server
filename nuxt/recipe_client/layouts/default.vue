@@ -2,7 +2,9 @@
     <v-app>
         <NavigationNavBar />
         <v-main>
-            <NuxtPage />
+            <v-container>
+                <NuxtPage />
+            </v-container>
         </v-main>
     </v-app>
 </template>

@@ -1,10 +1,19 @@
 <template>
-    <v-container>
+    
         <p class="text-h1">Recipes</p>
-    </v-container>
+        <recipes-list-view :recipes="recipes" />
+    
 </template>
 
 <script setup lang="js">
-    const config = useRuntimeConfig();
-    const stuff = await useFetch('/recipes/', {baseURL: config.public.baseURL})    
+definePageMeta({
+    name: "RecipesHome"
+});
+
+const {getRecipes} = recipeUtils();
+const {data: recipes, error} = await useAsyncData('recipes',() => getRecipes());
+console.log(recipes);
+
+
+
 </script>
