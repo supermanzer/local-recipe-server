@@ -1,6 +1,9 @@
 <template>
-    <v-list-item>
-        {{ step }}
+    <v-list-item v-show="showStep">
+        <template v-slot="prepend">
+            <v-icon :icon="icon"></v-icon>
+        </template>
+        
     </v-list-item>
 </template>
 
@@ -8,4 +11,8 @@
 const {step} = defineProps({
     step: {type: Object, required: false, default: () => {}}
 })
+
+const showStep = ref(true)
+
+const icon = computed(() => `numeric-${step.order}-circle`)
 </script>

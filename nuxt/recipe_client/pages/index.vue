@@ -1,8 +1,6 @@
 <template>
-    
-        <p class="text-h1">Recipes</p>
-        <recipes-list-view :recipes="recipes" />
-    
+    <p class="text-h1">Recipes</p>
+    <recipes-list-view :recipes="recipes" />
 </template>
 
 <script setup lang="js">

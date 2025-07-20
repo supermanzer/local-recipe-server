@@ -10,8 +10,16 @@
             <v-card-title>{{ recipe.name }}</v-card-title>
         </v-img>
         <v-card-text>
-            <RecipesIngredientList :ingredients="recipe.ingredients" />
-            <RecipesStepList :steps="recipe.recipe_steps" />
+            <v-row>
+                <v-col cols="12" sm="12" md="4">
+                    <RecipesIngredientList :ingredients="recipe.ingredients" />
+                </v-col>
+                <v-col cols="12" sm="12" md="8">
+                    <RecipesStepList :steps="recipe.recipe_steps" />
+                </v-col>
+            </v-row>
+            
+            
         </v-card-text>
     </v-card>
 </template>
