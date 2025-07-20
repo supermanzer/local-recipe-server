@@ -1,5 +1,5 @@
 # Set runtime conditions
-FROM arm64v8/python:3.9
+FROM arm64v8/python:3.9.23-bookworm
 ENV PYTHONPATH /app
 ENV PYTHONUNBUFFERED 1
 
