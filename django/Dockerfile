@@ -1,5 +1,5 @@
 # Set runtime conditions
-FROM python:3.9
+FROM arm64v8/python:3.9
 ENV PYTHONPATH /app
 ENV PYTHONUNBUFFERED 1
 

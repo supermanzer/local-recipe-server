@@ -1,7 +1,6 @@
 <template>
     <v-list :items="formattedSteps" lines="three" item-props>
-        <v-list-subheader>Steps</v-list-subheader>
-        v-
+        
     </v-list>
 </template>
 
