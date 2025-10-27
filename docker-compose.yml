@@ -17,3 +17,13 @@ services:
       - "8900:80"
     env_file:
       - .env
+
+  django2:
+    restart: always
+    build: ./django2
+    volumes:
+      - ./django2:/app
+    ports:
+      - "8585:8000"
+    env_file:
+      - .env
