@@ -1,0 +1,15 @@
+{% extends "my_recipes/main.html" %}
+
+{% block content %}
+<div class="content-container">
+    <h1 class="headline-large">Recipe List</h1>
+</div>
+
+<div class="content-containr">
+    <ul>
+        {% for recipe in recipe_list %}
+            <li>{{recipe.name}}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

@@ -1,0 +1,73 @@
+/* Material Design 3 Custom Properties */
+:root {
+    --md-sys-color-surface-container-low: var(--md-sys-color-surface-variant);
+}
+
+/* Navigation Styles */
+nav {
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+md-tabs {
+    --md-primary-tab-container-height: 64px;
+    width: 100%;
+    --md-sys-color-primary: #333333;
+    --md-sys-color-on-surface: #333333;
+}
+
+md-primary-tab {
+    --md-primary-tab-icon-size: 24px;
+    --md-primary-tab-container-padding: 0 16px;
+}
+
+md-primary-tab md-icon {
+    font-size: var(--md-primary-tab-icon-size);
+    width: var(--md-primary-tab-icon-size);
+    height: var(--md-primary-tab-icon-size);
+    margin-right: 8px;
+}
+
+/* Footer Styles */
+.surface-container-low {
+    background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+    width: 100%;
+    color: white;
+}
+
+.footer-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Override Material Button colors for footer */
+.footer-links md-text-button {
+    --md-sys-color-primary: white;
+    --md-text-button-label-text-color: white;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.text-secondary {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Ensure proper spacing for the main content */
+main {
+    min-height: calc(100vh - 160px);
+    /* Adjust based on header/footer height */
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}

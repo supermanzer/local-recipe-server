@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
-      baseURL: 'http://localhost:8000'
+      baseURL: 'http://localhost:8585/api'
     }
   },
   build: {

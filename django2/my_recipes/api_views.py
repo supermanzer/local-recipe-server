@@ -1,14 +1,14 @@
 from logging import getLogger
 
 from rest_framework import viewsets
-from serializers import IngredientSerializer, RecipeSerializer
 
 from .models import Ingredient, Recipe
+from .serializers import IngredientSerializer, RecipeSerializer
 
 logger = getLogger(__name__)
 
 
-class RecipeViewSet(viewsets.ViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     search_fields = ["name"]
     filterset_fields = [
@@ -18,7 +18,7 @@ class RecipeViewSet(viewsets.ViewSet):
     serializer_class = RecipeSerializer
 
 
-class IngredientViewSet(viewsets.ViewSet):
+class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     search_fields = ["name"]
     serializer_class = IngredientSerializer

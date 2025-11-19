@@ -33,6 +33,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# Automatically append a trailing slash to URLs for GET/HEAD requests when a matching
+# URL pattern with a trailing slash exists. This requires
+# 'django.middleware.common.CommonMiddleware' to be present in MIDDLEWARE.
+APPEND_SLASH = True
+
 
 # Application definition
 
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
     "django_filters",
     "corsheaders",
     "my_recipes.apps.MyRecipesConfig",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
@@ -65,7 +71,9 @@ ROOT_URLCONF = "recipes.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            Path.joinpath(BASE_DIR, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,12 +91,32 @@ WSGI_APPLICATION = "recipes.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Read DB connection from DATABASE_URL environment variable. Falls back to sqlite.
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    # Parse DATABASE_URL like: postgres://user:password@host:port/dbname
+    from urllib.parse import urlparse
+
+    parsed = urlparse(DATABASE_URL)
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": parsed.path[1:],  # skip leading '/'
+            "USER": parsed.username,
+            "PASSWORD": parsed.password,
+            "HOST": parsed.hostname,
+            "PORT": parsed.port or "",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -126,6 +154,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Directory where static files will be collected during deployment
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -1,0 +1,192 @@
+---
+# 0 PostgreSQL Persistent Volume Claim
+# Reserves file system storage for database data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  labels:
+    app: recipe-app
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+---
+#0.1 PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-postres-deployment
+spec:
+  selector:
+    matchLabels:
+      app: recipe-app
+      tier: database
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: recipe-app
+        tier: database
+    spec:
+      containers:
+        - name: postgres-server
+          image: postgres:15-alpine
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "recipe_user"
+            - name: POSTGRES_PASSWORD
+              value: "recipe_password"
+            - name: "POSTGRES_DB"
+              value: "recipe_db"
+
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+# 1. Django Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-django-deployment
+spec:
+  selector:
+    matchLabels:
+      app: recipe-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: recipe-app
+        tier: backend
+
+    spec:
+      containers:
+        - name: django-server
+
+          image: 192.168.0.140:32000/recipe-server/django2:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "postgres://recipe_user:recipe_password#recipe-postgres-service:5432/recipe_db"
+
+---
+# 2. Django Backend Service
+# This service is only accessible within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: recipe-django-service
+  labels:
+    app: recipe-app
+    tier: backend
+spec:
+  # this indicates this is for internal communication only
+  type: ClusterIP
+  selector:
+    app: recipe-app
+    tier: backend
+  ports:
+    - port: 80
+      targetPort: 8000 # Forward to container port
+---
+# 3. Nuxt.js Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-nuxt-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recipe-app
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: recipe-app
+        tier: frontend
+    spec:
+      containers:
+        - name: nuxt-client
+          image: 192.168.0.140:32000/recipe-server/nuxt:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: API_URL
+              value: "http://recipe-django-service:80"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 3000
+---
+# 4. Ingress Resource (Permits external access)
+# This exposes the Nuxt client via the ingress controller
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: recipe-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: public
+  labels:
+    app.kubernetes.io/name: recipe-app-ingress
+spec:
+  rules:
+    - host: recipe.local
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: recipe-nuxt-service
+                port:
+                  number: 3000
+---
+# 5. Nuxt.js Frontend Service
+# This is the internal service used by the Ingress controller
+apiVersion: v1
+kind: Service
+metadata:
+  name: recipe-nuxt-service
+  labels:
+    app: recipe-app
+    tier: frontend
+spec:
+  selector:
+    app: recipe-app
+    tier: frontend
+  ports:
+    - port: 3000
+      targetPort: 3000

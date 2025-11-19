@@ -40,4 +40,9 @@ EXPOSE 8000
 
 # Default command to run the development server
 # This is ideal for local development with a mounted volume.
+# Ensure the wait_for_db helper is executable and use it as the entrypoint so
+# the container waits for Postgres to be reachable before starting Django.
+RUN chmod +x /app/wait_for_db.sh
+
+ENTRYPOINT ["/bin/sh", "/app/wait_for_db.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

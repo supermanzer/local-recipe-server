@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nuxt-deployment
+  labels:
+    app: nuxt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nuxt
+  template:
+    metadata:
+      labels:
+        app: nuxt
+    spec:
+      containers:
+        - name: nuxt
+          image: 192.168.0.140:32000/recipe-server/nuxt:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            # provide the backend URL using the django service name
+            - name: API_BASE_URL
+              value: "http://django2-svc:8000"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10

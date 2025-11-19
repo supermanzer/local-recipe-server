@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuxt-svc
+  labels:
+    app: nuxt
+spec:
+  type: ClusterIP
+  selector:
+    app: nuxt
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
