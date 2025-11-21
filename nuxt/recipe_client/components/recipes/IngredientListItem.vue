@@ -1,6 +1,6 @@
 <template>
     <v-list-item>
-        <v-list-item-title v-text="itemTitle"></v-list-item-title>
+        <v-list-item-title class="text-wrap" v-text="itemTitle"></v-list-item-title>
     </v-list-item>
 </template>
 
