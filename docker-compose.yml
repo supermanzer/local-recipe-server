@@ -12,7 +12,11 @@ services:
   #     - .env
   nuxt:
     restart: always
-    build: ./nuxt
+    build:
+      context: ./nuxt
+      args:
+        # Pass API_BASE from the repo .env into the build as API_BASE
+        API_BASE: ${API_BASE}
     ports:
       - "8900:80"
     env_file:

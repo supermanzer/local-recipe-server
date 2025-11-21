@@ -8,6 +8,8 @@ import type { PaginatedRecipeResponse, Recipe } from "~/types/recipe.types";
 export const recipeUtils = () => {
     const config = useRuntimeConfig();
     const baseURL = config.public.baseURL;
+    console.log("BASE URL: ", baseURL);
+
     /**
      * Fetches all recipes from the API
      * @returns {Promise<Recipe[]>} A promise that resolves to an array of recipes

@@ -1,5 +1,6 @@
 <template>
     <v-data-table
+    v-if="recipes !== null"
     :headers="headers"
      :items="recipes"
     >
@@ -18,6 +19,9 @@
             </div>
         </template>
     </v-data-table>
+    <div v-else>
+        <p class="text-h1">FOO</p>
+    </div>
 </template>
 
 <script setup lang="js">
