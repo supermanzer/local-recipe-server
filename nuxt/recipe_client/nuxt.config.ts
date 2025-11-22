@@ -9,6 +9,9 @@ export default defineNuxtConfig({
       baseURL: process.env.API_BASE
     }
   },
+  routeRules: {
+    '/recipes/**': { ssr: false }
+  },
   build: {
     transpile: ['vuetify'],
   },
