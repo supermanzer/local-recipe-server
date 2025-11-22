@@ -5,12 +5,14 @@
       v-for="ingredient in ingredients" 
       :key="ingredient.id"  
       :ingredient="ingredient"
+      :highlighted-ids="highlightedIds"
     />
    </v-list>
 </template>
 
 <script setup lang="js">
- const { ingredients } = defineProps({
-    ingredients: {type: Array, required: false, default: () => []}
+ const { ingredients, highlightedIds } = defineProps({
+    ingredients: { type: Array, required: false, default: () => [] },
+    highlightedIds: { type: Array, required: false, default: () => [] }
  })
 </script>

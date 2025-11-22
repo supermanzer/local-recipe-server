@@ -70,3 +70,13 @@ class RecipeIngredient(models.Model):
 
     def __str__(self) -> str:
         return f"{self.recipe}: {self.ingredient} - {self.amount} {self.unit}"
+
+
+class StepIngredient(models.Model):
+    """A relationship entity between a Recipe Step and Ingredient.
+
+    This provides the relationship to allow highlighting in the UI when a specific step is being worked on.
+    """
+
+    step = models.ForeignKey(Step, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(RecipeIngredient, on_delete=models.CASCADE)

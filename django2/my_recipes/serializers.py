@@ -7,15 +7,28 @@ from . import models
 logger = getLogger(__name__)
 
 
-class StepSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Step
-        fields = ["id", "order", "step"]
-
-
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.RecipeIngredient
+        fields = ["id", "amount", "unit", "ingredient"]
+
+
+class StepIngredientSerializer(serializers.ModelSerializer):
+    ingredient = RecipeIngredientSerializer(read_only=True)
+
+    class Meta:
+        model = models.StepIngredient
+        fields = ["id", "ingredient"]
+
+
+class StepSerializer(serializers.ModelSerializer):
+    step_ingredients = StepIngredientSerializer(
+        source="stepingredient_set", many=True, read_only=True
+    )
+
+    class Meta:
+        model = models.Step
+        fields = ["id", "order", "step", "step_ingredients"]
 
 
 class RecipeSerializer(serializers.ModelSerializer):

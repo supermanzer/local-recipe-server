@@ -1,10 +1,16 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, RecipeIngredient, Step
+from .models import Ingredient, Recipe, RecipeIngredient, Step, StepIngredient
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
+
+    extra = 1
+
+
+class StepIngredientInline(admin.TabularInline):
+    model = StepIngredient
 
     extra = 1
 
@@ -29,9 +35,9 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Step)
 class StepAdmin(admin.ModelAdmin):
-    pass
+    inlines = [StepIngredientInline]
 
 
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    pass
+    inlines = [StepIngredientInline]
