@@ -7,8 +7,12 @@ import type { PaginatedRecipeResponse, Recipe } from "~/types/recipe.types";
 
 export const recipeUtils = () => {
     const config = useRuntimeConfig();
-    const baseURL = config.public.baseURL;
+    let baseURL = config.public.baseURL;
+    console.log("BASE URL ", baseURL);
+    if (!baseURL) {
+        baseURL = "http://localhost:8585/api"
 
+    }
 
     /**
      * Fetches all recipes from the API
@@ -17,6 +21,8 @@ export const recipeUtils = () => {
     const getRecipes = async (): Promise<Recipe[]> => {
 
         const { results } = await $fetch<PaginatedRecipeResponse>('/recipes/', { baseURL: baseURL })
+        console.log("Recipe Results: ", results);
+
         return results
     }
     const getRecipe = async (id: string): Promise<Recipe> => {

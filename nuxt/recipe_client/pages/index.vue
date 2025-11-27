@@ -8,14 +8,12 @@ definePageMeta({
     name: "RecipesHome"
 });
 
+
 const {getRecipes} = recipeUtils();
-onMounted(async () => {
-    const {data: recipes, error} = await useAsyncData('recipes',() => getRecipes());
-    console.log("Got recipes: ", recipes);
-})
 
 
+const {data: recipes, error} = await useAsyncData('recipes',() => getRecipes());
 
 
-
+console.log(recipes);
 </script>
