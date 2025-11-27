@@ -9,7 +9,10 @@ definePageMeta({
 });
 
 const {getRecipes} = recipeUtils();
-const {data: recipes, error} = await useAsyncData('recipes',() => getRecipes());
+onMounted(async () => {
+    const {data: recipes, error} = await useAsyncData('recipes',() => getRecipes());
+})
+
 console.log(recipes);
 
 

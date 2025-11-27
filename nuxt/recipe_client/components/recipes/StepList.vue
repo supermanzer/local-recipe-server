@@ -12,7 +12,7 @@
                         <v-icon :icon="`numeric-${step.order}-circle`"></v-icon>
                     </template>
                     <v-list-item-title>Step {{ step.order }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ step.step }}</v-list-item-subtitle>
+                    <p class="text-pre-wrap">{{ step.step }}</p>
                 </v-list-item>
                 <v-divider v-if="idx < steps.length - 1" :inset="true"></v-divider>
             </template>
