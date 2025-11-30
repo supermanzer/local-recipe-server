@@ -3,7 +3,13 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   ssr: false,
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
   runtimeConfig: {
     public: {
       baseURL: process.env.API_BASE

@@ -31,3 +31,17 @@ export interface PaginatedRecipeResponse {
     /** Array of recipe objects for the current page */
     results: Recipe[];
 }
+
+export interface Ingredient {
+    // The ID of the Ingredient record
+    id: number;
+    // The name of the igredient
+    name: string;
+}
+
+export interface PaginatedIngredientResponse {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: Ingredient[];
+}

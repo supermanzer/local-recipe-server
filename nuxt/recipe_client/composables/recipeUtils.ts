@@ -3,7 +3,7 @@
  * @module recipeUtils
  */
 
-import type { PaginatedRecipeResponse, Recipe } from "~/types/recipe.types";
+import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, Recipe } from "~/types/recipe.types";
 
 export const recipeUtils = () => {
     const config = useRuntimeConfig();
@@ -31,8 +31,33 @@ export const recipeUtils = () => {
         })
     }
 
+    const searchRecipes = async (ingredients: number[]): Promise<Recipe[]> => {
+        console.log("Ingredients: ", ingredients);
+
+        const params = new URLSearchParams()
+        ingredients.forEach(id => {
+            params.append('ingredients', id.toString())
+        })
+
+        const { results } = await $fetch<PaginatedRecipeResponse>(`/recipes/?${params.toString()}`, {
+            baseURL: baseURL,
+        })
+
+        return results
+    }
+
+    const getIngredients = async (): Promise<Ingredient[]> => {
+        const { results } = await $fetch<PaginatedIngredientResponse>('/ingredients/', {
+            baseURL: baseURL
+        });
+
+        return results
+    }
+
     return {
         getRecipes,
-        getRecipe
+        getRecipe,
+        searchRecipes,
+        getIngredients
     }
 }
