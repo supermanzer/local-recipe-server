@@ -87,7 +87,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "recipes.wsgi.application"
 
-
+# Defining locations for user uploaded content
+# https://docs.djangoproject.com/en/5.2/ref/settings/#media-root
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
