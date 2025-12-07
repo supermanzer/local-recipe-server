@@ -30,6 +30,7 @@ export default defineNuxtConfig({
       })
     },
     '@vueuse/nuxt',
+    '@nuxt/eslint'
   ],
   vite: {
     vue: {

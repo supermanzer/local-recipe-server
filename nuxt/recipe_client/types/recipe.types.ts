@@ -45,3 +45,9 @@ export interface PaginatedIngredientResponse {
     previous: string | null;
     results: Ingredient[];
 }
+
+export interface ActionResponse {
+    status: string | null;
+    message: string | null;
+    error: string | null;
+}

@@ -1,6 +1,8 @@
 from logging import getLogger
+from pathlib import Path
 
 from django.conf import settings
+from django.http import FileResponse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -63,17 +65,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 200,
             )
         except Exception as e:
-            data, status = {"error": str(e)}, 500
+            data, status = {"status": "failed", "error": str(e)}, 500
 
         return Response(data, status=status)
 
     @action(detail=False, methods=["post"])
     def restore_recipes(self, request: Request):
         backup_file = request.FILES.get("backup_file")
-        overwrite = request.data("overwrite", False)
+        overwrite = request.data.get("overwrite", False)
 
         if not backup_file:
-            return Response({"error": "File missing"}, status=400)
+            return Response(
+                {"status": "failed", "error": "File missing"}, status=400
+            )
         try:
             recipes = RecipeBackup.restore_recipes(
                 input_file=backup_file, overwrite=overwrite
@@ -89,6 +93,43 @@ class RecipeViewSet(viewsets.ModelViewSet):
             data, status = {"error": str(e)}, 400
 
         return Response(data=data, status=status)
+
+    @action(detail=False, methods=["get"])
+    def download_backup(self, request: Request):
+        """Download the latest backup file from media root"""
+        try:
+            media_root = Path(settings.MEDIA_ROOT)
+            logger.info("Searching for latest backup file in media root")
+
+            # Find all backup files matching the pattern
+            backup_files = sorted(
+                media_root.glob("recipes_backup_*.json"),
+                key=lambda x: x.stat().st_mtime,
+                reverse=True,
+            )
+
+            if not backup_files:
+                logger.warning("No backup files found in media root")
+                return Response(
+                    {"status": "failed", "error": "No backup files found"},
+                    status=404,
+                )
+
+            latest_backup = backup_files[0]
+            logger.info(f"Found latest backup: {latest_backup.name}")
+
+            # Open and return the file
+            response = FileResponse(
+                open(latest_backup, "rb"),
+                as_attachment=True,
+                filename=latest_backup.name,
+            )
+            logger.info(f"Sending backup file: {latest_backup.name}")
+            return response
+
+        except Exception as e:
+            logger.error(f"Error downloading backup: {str(e)}")
+            return Response({"status": "failed", "error": str(e)}, status=500)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):

@@ -3,7 +3,7 @@
  * @module recipeUtils
  */
 
-import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, Recipe } from "~/types/recipe.types";
+import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, Recipe, ActionResponse } from "~/types/recipe.types";
 
 export const recipeUtils = () => {
     const config = useRuntimeConfig();
@@ -54,10 +54,46 @@ export const recipeUtils = () => {
         return results
     }
 
+    const triggerBackup = async (): Promise<ActionResponse> => {
+        const result = await $fetch<ActionResponse>('/recipes/backup_recipes/', {
+            baseURL: baseURL,
+            method: "POST"
+        })
+        return result
+    }
+
+    const triggerRestore = async (file: File, overwrite: boolean): Promise<ActionResponse> => {
+        const formData = new FormData();
+
+        formData.append("backup_file", file);
+        formData.append('overwrite', overwrite.toString());
+
+        const result = await $fetch<ActionResponse>('/recipes/restore_recipes/', {
+            baseURL: baseURL,
+            method: 'POST',
+            body: formData
+        });
+
+        return result
+    }
+
+    const downloadLatestBackup = async () => {
+        const link = document.createElement('a');
+        link.href = `${baseURL}/recipes/download_backup/`;
+        link.download = '';  // Browser will use Content-Disposition filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Browser will automatically download the file
+    }
+
     return {
         getRecipes,
         getRecipe,
         searchRecipes,
-        getIngredients
+        getIngredients,
+        triggerBackup,
+        triggerRestore,
+        downloadLatestBackup
     }
 }
