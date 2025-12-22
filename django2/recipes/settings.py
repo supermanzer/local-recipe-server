@@ -96,21 +96,26 @@ MEDIA_URL = "/media/"
 
 # Read DB connection from DATABASE_URL environment variable. Falls back to sqlite.
 DATABASE_URL = os.getenv("DATABASE_URL")
+DB_NAME = os.getenv("POSTGRES_DB", False)
+DB_USER = os.getenv("POSTGRES_USER")
+DB_PW = os.getenv("POSTGRES_PASSWORD")
+DB_PORT = os.getenv("POSTGRES_PORT")
 
-if DATABASE_URL:
-    # Parse DATABASE_URL like: postgres://user:password@host:port/dbname
-    from urllib.parse import urlparse
 
-    parsed = urlparse(DATABASE_URL)
+# if DATABASE_URL:
+#     # Parse DATABASE_URL like: postgres://user:password@host:port/dbname
+#     from urllib.parse import urlparse
 
+#     parsed = urlparse(DATABASE_URL)
+if DB_NAME:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": parsed.path[1:],  # skip leading '/'
-            "USER": parsed.username,
-            "PASSWORD": parsed.password,
-            "HOST": parsed.hostname,
-            "PORT": parsed.port or "",
+            "NAME": DB_NAME,  # skip leading '/'
+            "USER": DB_USER,
+            "PASSWORD": DB_PW,
+            "HOST": "postgres",
+            "PORT": DB_PORT,
         }
     }
 else:
