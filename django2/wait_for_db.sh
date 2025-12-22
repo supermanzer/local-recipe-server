@@ -8,25 +8,23 @@ import os
 import sys
 import time
 import socket
-from urllib.parse import urlparse
 
-url = os.getenv('DATABASE_URL')
-if not url:
-    print('No DATABASE_URL provided; skipping wait.')
-    sys.exit(0)
+# Get PostgreSQL connection parameters from environment variables
+host = os.getenv('POSTGRES_HOST', 'postgres')  # Default to 'postgres' for Docker
+port = int(os.getenv('POSTGRES_PORT', 5432))
+user = os.getenv('POSTGRES_USER', 'admin_user')
+db = os.getenv('POSTGRES_DB', 'recipes')
 
-p = urlparse(url)
-host = p.hostname or 'localhost'
-port = int(p.port or 5432)
+print(f'Attempting to connect to {user}@{host}:{port}/{db}')
 
 for i in range(60):
     try:
         s = socket.create_connection((host, port), timeout=3)
         s.close()
-        print('Database reachable at %s:%d' % (host, port))
+        print(f'Database reachable at {host}:{port}')
         sys.exit(0)
-    except Exception:
-        print('Waiting for DB... attempt', i+1)
+    except Exception as e:
+        print(f'Waiting for DB... attempt {i+1}/60')
         time.sleep(1)
 
 print('Timed out waiting for DB after 60s')
