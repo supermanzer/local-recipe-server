@@ -8,6 +8,10 @@ import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, 
 export const recipeUtils = () => {
     const config = useRuntimeConfig();
     let baseURL = config.public.baseURL;
+    const { accessToken } = useAuth();
+
+    const authHeader = { Authorization: `Bearer ${accessToken.value}` }
+
     console.log("BASE URL ", baseURL);
     if (!baseURL) {
         baseURL = "http://localhost:8585/api"
@@ -20,14 +24,20 @@ export const recipeUtils = () => {
      */
     const getRecipes = async (): Promise<Recipe[]> => {
 
-        const { results } = await $fetch<PaginatedRecipeResponse>('/recipes/', { baseURL: baseURL })
-        console.log("Recipe Results: ", results);
+        const { results } = await $fetch<PaginatedRecipeResponse>('/recipes/', {
+            baseURL,
+            method: 'GET',
+            headers: authHeader
+        })
+        console.log("RECIPE COUNT: ", results.length);
 
         return results
     }
     const getRecipe = async (id: string): Promise<Recipe> => {
         return await $fetch<Recipe>(`/recipes/${id}`, {
-            baseURL
+            baseURL,
+            method: 'GET',
+            headers: authHeader
         })
     }
 
@@ -41,6 +51,8 @@ export const recipeUtils = () => {
 
         const { results } = await $fetch<PaginatedRecipeResponse>(`/recipes/?${params.toString()}`, {
             baseURL: baseURL,
+            method: 'GET',
+            headers: authHeader
         })
 
         return results
@@ -48,7 +60,9 @@ export const recipeUtils = () => {
 
     const getIngredients = async (): Promise<Ingredient[]> => {
         const { results } = await $fetch<PaginatedIngredientResponse>('/ingredients/', {
-            baseURL: baseURL
+            baseURL,
+            method: 'GET',
+            headers: authHeader
         });
 
         return results
@@ -57,7 +71,8 @@ export const recipeUtils = () => {
     const triggerBackup = async (): Promise<ActionResponse> => {
         const result = await $fetch<ActionResponse>('/recipes/backup_recipes/', {
             baseURL: baseURL,
-            method: "POST"
+            method: "POST",
+            headers: authHeader
         })
         return result
     }
@@ -71,7 +86,8 @@ export const recipeUtils = () => {
         const result = await $fetch<ActionResponse>('/recipes/restore_recipes/', {
             baseURL: baseURL,
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: authHeader
         });
 
         return result

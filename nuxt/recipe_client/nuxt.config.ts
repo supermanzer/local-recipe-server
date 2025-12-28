@@ -18,6 +18,9 @@ export default defineNuxtConfig({
   routeRules: {
     '/recipes/**': { ssr: false }
   },
+  plugins: [
+    '~/plugins/auth.ts',
+  ],
   build: {
     transpile: ['vuetify'],
   },

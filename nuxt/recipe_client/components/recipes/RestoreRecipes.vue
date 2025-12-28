@@ -8,6 +8,7 @@
             <v-btn
              variant="outlined"
              v-bind="props"
+             :block="block"
             >
                 Restore Recipes
             </v-btn>
@@ -23,6 +24,9 @@
                   title="Restore Response"
                   :type="alertType"
                   :text="alertText"
+                  class="mb-6"
+                  closable
+                  @click:close="dismiss"
                   />
                 <v-form>
                     <v-file-input
@@ -63,23 +67,27 @@
 
 <script setup lang="ts">
 const {triggerRestore} = recipeUtils();
+const {block} = defineProps({
+        block: {type: Boolean, required: false, default: false}
+})
 
 const menu = ref(false);
 const file = ref(null);
 const overwrite = ref(false);
-const error = ref('');
-const message = ref('');
+const restorError = ref('');
+const restoreMessage = ref('');
 
 const alert = computed(() => {
-    return error.value.length > 0 || message.value.length > 0;
+    return restorError.value.length > 0 || restoreMessage.value.length > 0;
 });
 
 const alertType = computed(() => {
-    return error.value.length > 0 ? 'error' : 'success';
+
+    return restorError.value.length > 0 ? 'error' : 'success';
 });
 
 const alertText = computed(() => {
-    return error.value.length > 0 ? error.value : message.value;
+    return restorError.value.length > 0 ? restorError.value : restoreMessage.value;
 });
 
 
@@ -91,14 +99,21 @@ const clearAndClose = () => {
 const uploadAndRestore = async() => {
     if (file.value !== null) {
         console.log("Received file: ", file.value);
-        const result = await triggerRestore(file.value, overwrite.value);
-        if (result.error !== null) {
-            error.value = result.error;
-        } else if (result.message !== null) {
-            message.value = result.message
+        const {error, message, status} = await triggerRestore(file.value, overwrite.value);
+        if (error) {
+            restorError.value = error;
+        } else if (message) {
+            restoreMessage.value = message
         } else {
-            console.log("Result from restore action: ", result);
+            console.log("Result from restore action: ", status);
         };
     }
 };
+
+const dismiss = () => {
+    restorError.value = '';
+    restoreMessage.value = '';
+    file.value = null;
+    menu.value = false;
+}
 </script>

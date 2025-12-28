@@ -6,6 +6,7 @@ from django.http import FileResponse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -48,6 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilterSet
     ordering_fields = ["created_at", "modified_at", "name"]
     serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["post"])
     def backup_recipes(self, request: Request):
@@ -136,3 +138,4 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     search_fields = ["name"]
     serializer_class = IngredientSerializer
+    permission_classes = [IsAuthenticated]

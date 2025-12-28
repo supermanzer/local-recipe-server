@@ -3,6 +3,7 @@
         <v-btn
             text="Backup Recipes"
             variant="outlined"
+            :block="block"
             @click="createBackup"
         />
         <v-dialog
@@ -36,6 +37,9 @@
 
 <script setup lang="ts">
     const {triggerBackup, downloadLatestBackup} = recipeUtils();
+    const {block} = defineProps({
+        block: {type: Boolean, required: false, default: false}
+    })
 
     const isActive = ref(false);
     const dialogText = ref('');
