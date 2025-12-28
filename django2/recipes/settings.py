@@ -185,8 +185,9 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3333",
+    "http://localhost:8900",
     "http://localhost",
-    "http://24.199.106.231:8585",
+    "http://24.199.106.231",
     # Add production URL
 ]
 
