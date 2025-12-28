@@ -186,6 +186,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3333",
     "http://localhost",
+    "http://24.199.106.231:8585",
     # Add production URL
 ]
 
