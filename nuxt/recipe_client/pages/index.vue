@@ -11,7 +11,7 @@ import type { Recipe } from '~/types/recipe.types';
 
 definePageMeta({
     name: "RecipesHome",
-    middleware: 'auth'
+    // middleware: 'auth'
 });
 
 

@@ -22,6 +22,9 @@
         <v-divider/>
         <v-list-item subtitle="Actions"/>
         <v-list-item>
+            <v-btn @click="logoutRedirect">Logout</v-btn>
+        </v-list-item>
+        <v-list-item>
             <recipes-backup-recipe-button :block="true" class="mx-2" />
         </v-list-item>
         <v-list-item>

@@ -33,7 +33,12 @@
 <script setup lang="js">
 const {getRecipe} = recipeUtils();
 const route  = useRoute();
-const {data:recipe, error} = useAsyncData('recipe', () => getRecipe(route.params.id))
+const {data:recipe, _error} = useAsyncData('recipe', () => getRecipe(route.params.id))
+
+definePageMeta({
+    name: "RecipeDetail",
+    // middleware: 'auth'
+});
 
 const highlightedIngredientIds = ref([])
 
