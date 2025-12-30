@@ -37,7 +37,7 @@ const {data:recipe, _error} = useAsyncData('recipe', () => getRecipe(route.param
 
 definePageMeta({
     name: "RecipeDetail",
-    // middleware: 'auth'
+    middleware: 'auth'
 });
 
 const highlightedIngredientIds = ref([])

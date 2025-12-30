@@ -4,14 +4,18 @@
      :close-on-content-click="false"
      location="bottom start"
     >
-        <template #activator="{props}">
-            <v-btn
-             variant="outlined"
-             v-bind="props"
-             :block="block"
-            >
-                Restore Recipes
-            </v-btn>
+        <template #activator="{props: menu2}">
+            <v-tooltip location="left" text="Restore recipes from backup">
+                <template #activator="{props: tooltip}">
+                    <v-btn
+                        variant="text"
+                        v-bind="mergeProps(menu2, tooltip)"
+                        :block="block"
+                        prepend-icon="mdi-backup-restore"
+                        text="Restore"
+                    />
+                </template>
+            </v-tooltip>
         </template>
         <v-card
          title="Restore Recipes"
@@ -66,6 +70,8 @@
 </template>
 
 <script setup lang="ts">
+import { mergeProps } from 'vue';
+
 const {triggerRestore} = recipeUtils();
 const {block} = defineProps({
         block: {type: Boolean, required: false, default: false}

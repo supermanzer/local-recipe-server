@@ -8,7 +8,8 @@
         <template #append>
            <v-row v-show="!mobile" class="mx-4">
                 <v-btn
-                 icon="mdi-account"
+                 prepend-icon="mdi-logout"
+                 text="logout"
                  @click="logoutRedirect"
                 />
                <recipes-backup-recipe-button class="mx-2" />
@@ -20,14 +21,26 @@
     <v-navigation-drawer v-if="mobile" v-model="drawer">
         <v-list-item title>Local Recipes</v-list-item>
         <v-divider/>
-        <v-list-item subtitle="Actions"/>
+        <v-list-item subtitle="Navigation"/>
         <v-list-item>
-            <v-btn @click="logoutRedirect">Logout</v-btn>
+            <v-btn 
+             prepend-icon="mdi-home"
+             text="Recipes"
+             variant="text"
+             class="mb-4"
+             block
+             @click="navigateTo('/')"
+            />
         </v-list-item>
-        <v-list-item>
+        <v-divider/>
+        <v-list-item subtitle="Actions"/>
+        <v-list-item class="mb-4">
+            <v-btn  block variant="text" prepend-icon="mdi-logout" @click="logoutRedirect">Logout</v-btn>
+        </v-list-item>
+        <v-list-item class="mb-4">
             <recipes-backup-recipe-button :block="true" class="mx-2" />
         </v-list-item>
-        <v-list-item>
+        <v-list-item class="mb-4">
             <recipes-restore-recipes :block="true" class="mx-2" />
         </v-list-item>
     </v-navigation-drawer>

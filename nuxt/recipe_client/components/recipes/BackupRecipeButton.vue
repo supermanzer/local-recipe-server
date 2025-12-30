@@ -1,11 +1,17 @@
 <template>
     <div>
-        <v-btn
-            text="Backup Recipes"
-            variant="outlined"
-            :block="block"
-            @click="createBackup"
-        />
+        <v-tooltip location="left" text="Create recipes backup file">
+            <template #activator="{props}">
+                <v-btn
+                    prepend-icon="mdi-content-save"
+                    text="backup"
+                    variant="text"
+                    :block="block"
+                    v-bind="props"
+                    @click="createBackup"
+                />
+            </template>
+        </v-tooltip>
         <v-dialog
          v-model="isActive"
          width="auto"
