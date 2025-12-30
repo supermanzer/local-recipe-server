@@ -34,8 +34,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # Expose port for local convenience (optional)
-    ports:
-      - "5432:5432"
+    command: >
+      postgres 
+      -c log_connections=on
+      -c log_hostname=on
 
 volumes:
   postgres_data:
