@@ -181,14 +181,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_CREDENTIALS = True
 
-# TODO: Update this once hosting is confirmed
+ENV_HOST = f"{os.getenv('NUXT_HOST')}:{os.getenv('NUXT_PORT')}"
+print("ENV HOST: " + ENV_HOST)
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3333",
-    "http://localhost:8900",
-    "http://localhost",
-    "http://24.199.106.231",
-    # Add production URL
+    "http://localhost:3000",  # For local Nuxt development
+    ENV_HOST,
 ]
 
 # Django REST Framework Settings
