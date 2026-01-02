@@ -181,7 +181,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_CREDENTIALS = True
 
-ENV_HOST = f"{os.getenv('NUXT_HOST')}:{os.getenv('NUXT_PORT')}"
+ENV_HOST = f"{os.getenv('NUXT_HOST')}{'' if os.getenv('NUXT_PORT') == '80' else ':' + os.getenv('NUXT_PORT')}"
+
 print("ENV HOST: " + ENV_HOST)
 
 CORS_ALLOWED_ORIGINS = [
