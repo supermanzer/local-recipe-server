@@ -4,8 +4,8 @@ services:
   gateway:
     image: nginx:stable-alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "44343:443"
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certbot/conf:/etc/letsencrypt:ro
@@ -28,8 +28,8 @@ services:
       args:
         # Pass API_BASE from the repo .env into the build as API_BASE
         API_BASE: ${API_BASE}
-    ports:
-      - "${NUXT_PORT}:80"
+    expose:
+      - "80"
     env_file:
       - .env
 
