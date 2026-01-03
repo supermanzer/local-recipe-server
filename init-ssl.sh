@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Configuration
-domains=(yourdomain.com www.yourdomain.com)
+domains=(supermanzer.io recipes.supermanzer.io)
 rsa_key_size=4096
 data_path="./certbot"
-email="your-email@example.com" # Adding a valid email is required for Let's Encrypt
+email="ryan.manzer@gmail.com" # Adding a valid email is required for Let's Encrypt
 staging=0 # Set to 1 if you're just testing to avoid hitting rate limits
 
 if [ -d "$data_path" ]; then
