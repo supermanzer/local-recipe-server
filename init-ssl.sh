@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-domains=(supermanzer.io recipes.supermanzer.io)
+domains=( recipes.supermanzer.io)
 rsa_key_size=4096
 data_path="./certbot"
 email="ryan.manzer@gmail.com" # Adding a valid email is required for Let's Encrypt
