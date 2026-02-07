@@ -270,5 +270,6 @@ export const useAuth = () => {
         makeAuthRequest,
         getTokenExpirationTime,
         scheduleTokenRefresh,
+        getErrorMessage
     }
 }

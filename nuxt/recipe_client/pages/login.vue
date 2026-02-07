@@ -38,7 +38,7 @@
     const error = ref('')
     const loading = ref(false)
     const _router = useRouter()
-    const { login } = useAuth()
+    const { login, getErrorMessage } = useAuth()
     const handeLogin = async () => {
         console.log("You are trying to log in!");
 
@@ -50,7 +50,7 @@
         if (result.success) {
             await navigateTo('/')
         } else {
-            error.value = "Invalid credentials"
+            error.value = getErrorMessage(result.error)
             loading.value = false
         }
     }
