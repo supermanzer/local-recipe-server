@@ -30,7 +30,7 @@ services:
     build: ./django2
     volumes:
       - ./django2:/app
-    expose:
+    ports:
       - "8585:8000"
     env_file:
       - .env
