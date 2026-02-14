@@ -7,9 +7,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro  # This gives the container the new certs
     depends_on:
       - nuxt
       - django2
