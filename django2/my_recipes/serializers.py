@@ -1,15 +1,22 @@
 from logging import getLogger
 
+from django.db import transaction
 from rest_framework import serializers
 
-from . import models
+from django2.my_recipes.models import (
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    Step,
+    StepIngredient,
+)
 
 logger = getLogger(__name__)
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.RecipeIngredient
+        model = RecipeIngredient
         fields = ["id", "amount", "unit", "ingredient"]
 
 
@@ -17,7 +24,7 @@ class StepIngredientSerializer(serializers.ModelSerializer):
     ingredient = RecipeIngredientSerializer(read_only=True)
 
     class Meta:
-        model = models.StepIngredient
+        model = StepIngredient
         fields = ["id", "ingredient"]
 
 
@@ -27,7 +34,7 @@ class StepSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = models.Step
+        model = Step
         fields = ["id", "order", "step", "step_ingredients"]
 
 
@@ -35,7 +42,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     recipe_steps = StepSerializer(many=True, read_only=True)
 
-    def get_ingredients(self, obj: models.Recipe):
+    def get_ingredients(self, obj: Recipe):
         return [
             {
                 "id": ri.id,
@@ -44,19 +51,19 @@ class RecipeSerializer(serializers.ModelSerializer):
                 "name": ingredient.name,
             }
             for ingredient in obj.ingredients.all().distinct()
-            for ri in models.RecipeIngredient.objects.filter(
+            for ri in RecipeIngredient.objects.filter(
                 recipe=obj, ingredient=ingredient
             )
         ]
 
     class Meta:
-        model = models.Recipe
+        model = Recipe
         fields = ("id", "name", "ingredients", "recipe_steps")
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Ingredient
+        model = Ingredient
         fields = ("id", "name")
 
 
@@ -104,40 +111,119 @@ class RecipeManageSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """
-        Override .create() to handle recipe creation with nested objects.
+        Detailed implementation of atomic recipe creation.
 
-        Process:
-        1. Create Recipe instance with name
-        2. For each ingredient:
-           - Get or create Ingredient record
-           - Create RecipeIngredient record (linking ingredient to recipe with amount/unit)
-        3. For each step:
-           - Create Step record (linked to recipe with order)
-           - For each step ingredient reference:
-             - Create StepIngredient record (linking step to recipe ingredient)
-
-        All operations wrapped in transaction.atomic() for consistency.
-        Returns the created Recipe instance.
+        Key considerations:
+        - Ingredient reuse: get_or_create() handles existing ingredients
+        - Amount/unit tracking: stored on RecipeIngredient, not Ingredient
+        - Step ordering: provided by frontend
+        - Step-ingredient linking: uses ingredient_index to reference items
         """
 
-        pass
+        with transaction.atomic():
+            # 1. Create recipe
+            recipe = Recipe.objects.create(name=validated_data["name"])
+
+            # 2. Create/link ingredients
+            ingredient_map = {}  # Maps ingredient_index → RecipeIngredient ID
+
+            for ingredient_data in validated_data["ingredients"]:
+                # Get or create the base ingredient
+                ingredient, _ = Ingredient.objects.get_or_create(
+                    name=ingredient_data["name"]
+                )
+
+                # Create recipe ingredient link with amount/unit
+                recipe_ingredient = RecipeIngredient.objects.create(
+                    recipe=recipe,
+                    ingredient=ingredient,
+                    amount=ingredient_data["amount"],
+                    unit=ingredient_data.get("unit", ""),
+                )
+
+                # Store for step ingredient references
+                ingredient_map[len(ingredient_map)] = recipe_ingredient
+
+            # 3. Create steps and step-ingredient links
+            for step_data in validated_data["steps"]:
+                step = Step.objects.create(
+                    recipe=recipe,
+                    order=step_data["order"],
+                    step=step_data["step"],
+                )
+
+                # 4. Link ingredients to this step
+                for step_ingredient_ref in step_data.get("ingredients", []):
+                    ingredient_index = step_ingredient_ref["ingredient_index"]
+                    recipe_ingredient = ingredient_map[ingredient_index]
+
+                    StepIngredient.objects.create(
+                        step=step, ingredient=recipe_ingredient
+                    )
+
+            return recipe
 
     def update(self, instance, validated_data):
         """
-        Override .update() to handle recipe editing with nested objects.
+        Detailed implementation of atomic recipe updates.
 
-        For updates, we preserve the Recipe ID but replace all related objects.
-        This approach is simpler than trying to patch individual relationships.
+        Strategy: Replace all related objects (RecipeIngredients and Steps).
+        This is simpler than patching individual relationships and ensures
+        consistency - we know exactly what ingredients and steps exist after update.
 
-        Process:
-        1. Update Recipe.name if changed
-        2. Delete all existing RecipeIngredients for this recipe
-        3. Create new RecipeIngredients from validated_data
-        4. Delete all existing Steps for this recipe
-        5. Create new Steps and StepIngredients from validated_data
-
-        All operations wrapped in transaction.atomic() for consistency.
-        Returns the updated Recipe instance.
+        Key considerations:
+        - Preserve Recipe ID (the instance parameter)
+        - Update Recipe.name if changed
+        - Delete all old RecipeIngredients (cascades to StepIngredients automatically)
+        - Create new RecipeIngredients from validated_data
+        - Delete all old Steps (cascades to StepIngredients automatically)
+        - Create new Steps and StepIngredients from validated_data
         """
 
-        pass
+        with transaction.atomic():
+            # 1. Update recipe name
+            instance.name = validated_data["name"]
+            instance.save()
+
+            # 2. Delete old ingredients and steps (this cascades to StepIngredients)
+            instance.recipeingredient_set.all().delete()
+            instance.recipe_steps.all().delete()
+
+            # 3. Create/link ingredients (same logic as create)
+            ingredient_map = {}
+
+            for ingredient_data in validated_data["ingredients"]:
+                # Get or create the base ingredient
+                ingredient, _ = Ingredient.objects.get_or_create(
+                    name=ingredient_data["name"]
+                )
+
+                # Create recipe ingredient link with amount/unit
+                recipe_ingredient = RecipeIngredient.objects.create(
+                    recipe=instance,
+                    ingredient=ingredient,
+                    amount=ingredient_data["amount"],
+                    unit=ingredient_data.get("unit", ""),
+                )
+
+                # Store for step ingredient references
+                ingredient_map[len(ingredient_map)] = recipe_ingredient
+
+            # 4. Create steps and step-ingredient links (same logic as create)
+            for step_data in validated_data["steps"]:
+                step = Step.objects.create(
+                    recipe=instance,
+                    order=step_data["order"],
+                    step=step_data["step"],
+                )
+
+                # Link ingredients to this step
+                for step_ingredient_ref in step_data.get("ingredients", []):
+                    ingredient_index = step_ingredient_ref["ingredient_index"]
+                    recipe_ingredient = ingredient_map[ingredient_index]
+
+                    StepIngredient.objects.create(
+                        step=step, ingredient=recipe_ingredient
+                    )
+
+            return instance
