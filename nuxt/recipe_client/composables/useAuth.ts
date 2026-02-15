@@ -212,7 +212,7 @@ export const useAuth = () => {
         return { Authorization: `Bearer ${accessToken.value}` }
     }
 
-    const makeAuthRequest = async <T>(url: string, method: "GET" | "POST", body: object = {}): Promise<T> => {
+    const makeAuthRequest = async <T>(url: string, method: "GET" | "POST" | "PUT" | "DELETE", body: object = {}): Promise<T> => {
         console.log("MAKING AUTH REQUEST");
         const requestFunc = async (url: string, method: "GET" | "POST") => {
             const options: Record<string, unknown> = {

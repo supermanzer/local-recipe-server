@@ -7,7 +7,7 @@
          cover
          class="align-end text-white"
         >
-            <v-card-title>{{ recipe.name }}</v-card-title>
+            <v-card-title class="d-flex justify-space-between">{{ recipe.name }}     <RecipesEditButton /></v-card-title>
         </v-img>
         <v-card-text>
             <v-row>

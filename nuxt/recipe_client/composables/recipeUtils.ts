@@ -3,7 +3,7 @@
  * @module recipeUtils
  */
 
-import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, Recipe, ActionResponse } from "~/types/recipe.types";
+import type { PaginatedIngredientResponse, Ingredient, PaginatedRecipeResponse, Recipe, ActionResponse, RecipeCreatePayload } from "~/types/recipe.types";
 
 export const recipeUtils = () => {
     const { makeAuthRequest } = useAuth();
@@ -81,6 +81,51 @@ export const recipeUtils = () => {
         // Browser will automatically download the file
     }
 
+    /**
+     * Converts a Recipe API response to RecipeCreatePayload format for form editing.
+     *
+     * Transforms the nested API structure (RecipeIngredient with nested Ingredient)
+     * to the flat form structure expected by the create/edit form.
+     *
+     * @param recipe - Recipe object from API (includes recipe_steps and nested ingredients)
+     * @returns RecipeCreatePayload - Formatted data ready for form display/submission
+     */
+    const convertRecipeToFormData = (recipe: Recipe): RecipeCreatePayload => {
+        return {
+            name: recipe.name,
+            // Flatten ingredients: transform from RecipeIngredient to RecipeIngredientInput
+            ingredients: recipe.ingredients.map(recipeIngredient => ({
+                name: recipeIngredient.ingredient.name,
+                amount: Number(recipeIngredient.amount),
+                unit: recipeIngredient.unit || ''
+            })),
+            // Map steps and resolve ingredient indices
+            steps: recipe.recipe_steps.map(step => ({
+                order: step.order,
+                step: step.step,
+                // For each ingredient used in this step, find its index in the flattened ingredients array
+                ingredients: step.step_ingredients.map(stepIngredient => ({
+                    ingredient_index: recipe.ingredients.findIndex(
+                        recipeIngredient =>
+                            recipeIngredient.ingredient.id === stepIngredient.ingredient.id
+                    )
+                }))
+            }))
+        }
+    }
+
+    const createRecipe = async (recipeData: RecipeCreatePayload): Promise<Recipe> => {
+        const url = '/recipes/'
+        const response = await makeAuthRequest<Recipe>(url, "POST", recipeData)
+        return response
+    }
+
+    const updateRecipe = async (recipeId: number, recipeData: RecipeCreatePayload): Promise<Recipe> => {
+        const url = `/recipes/${recipeId}/`
+        const response = await makeAuthRequest<Recipe>(url, "PUT", recipeData)
+        return response
+    }
+
     return {
         getRecipes,
         getRecipe,
@@ -88,6 +133,9 @@ export const recipeUtils = () => {
         getIngredients,
         triggerBackup,
         triggerRestore,
-        downloadLatestBackup
+        downloadLatestBackup,
+        convertRecipeToFormData,
+        createRecipe,
+        updateRecipe,
     }
 }
