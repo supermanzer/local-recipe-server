@@ -121,6 +121,8 @@ export const recipeUtils = () => {
     }
 
     const updateRecipe = async (recipeId: number, recipeData: RecipeCreatePayload): Promise<Recipe> => {
+        console.log("GOT UPDATE REQUEST FOR RECIPE ", recipeId);
+        console.log("RECIPE DATA:\n", recipeData);
         const url = `/recipes/${recipeId}/`
         const response = await makeAuthRequest<Recipe>(url, "PUT", recipeData)
         return response

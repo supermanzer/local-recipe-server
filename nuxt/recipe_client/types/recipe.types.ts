@@ -24,7 +24,7 @@ export interface RecipeStep {
     id?: number;
     order: number;
     step: string;
-    step_ingredients: RecipeIngredient[];
+    ingredients: RecipeIngredient[];
 }
 
 /**
@@ -51,7 +51,7 @@ export interface Ingredient {
 
 export interface RecipeIngredient {
     id?: number;
-    ingredient: Ingredient;
+    name: string;
     amount: number | string;
     unit: string;
 }
@@ -75,7 +75,7 @@ export interface ActionResponse {
 
 export interface RecipeIngredientInput {
     name: string;
-    amount: number;
+    amount: number | string;
     unit: string;
 }
 
