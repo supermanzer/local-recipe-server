@@ -98,9 +98,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         4. All database operations in serializer.update() are atomic
         5. Return updated recipe using read serializer (RecipeSerializer)
         """
+        logger.info(f"UPDATING RECIPE WITH DATA: {request.data}")
         instance = self.get_object()
+        logger.info(f"Found existing recipe: {instance.name}")
         serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
+        logger.info("Validating Data")
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            logger.error(f"Error validating data: {str(e)}")
+            return Response({"status": "failed", "error": str(e)}, status=400)
 
         # serializer.update() does all the work (see Phase 1.4)
         recipe = serializer.save()

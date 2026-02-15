@@ -214,13 +214,13 @@ export const useAuth = () => {
 
     const makeAuthRequest = async <T>(url: string, method: "GET" | "POST" | "PUT" | "DELETE", body: object = {}): Promise<T> => {
         console.log("MAKING AUTH REQUEST");
-        const requestFunc = async (url: string, method: "GET" | "POST") => {
+        const requestFunc = async (url: string, method: "GET" | "POST" | "PUT" | "DELETE") => {
             const options: Record<string, unknown> = {
                 baseURL,
                 method,
                 headers: authHeader(),
             }
-            if (method === "POST" && body) {
+            if ((method === "POST" || method === "PUT") && body) {
                 options.body = body
             }
             return await $fetch<T>(url, options)

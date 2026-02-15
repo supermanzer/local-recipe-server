@@ -66,6 +66,8 @@ const formData = ref<RecipeCreatePayload>({
 
 
 const submitRecipe = async() => {
+    console.log("SUBMITTING RECIPE WITH DATA:\n", formData.alue);
+    
     isSubmitting.value = true;
     let recipe = null;
     try {
@@ -81,7 +83,7 @@ const submitRecipe = async() => {
         if (recipe !== null) {
             await navigateTo(`/recipes/${recipe?.id}`);
         } else {
-            await navigateTo('/recipes');
+            await navigateTo('/');
         }
     }
 }
