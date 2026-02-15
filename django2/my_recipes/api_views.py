@@ -4,7 +4,7 @@ from pathlib import Path
 from django.conf import settings
 from django.http import FileResponse
 from django_filters import rest_framework as filters
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -13,7 +13,11 @@ from rest_framework.response import Response
 from my_recipes.backup import RecipeBackup
 
 from .models import Ingredient, Recipe
-from .serializers import IngredientSerializer, RecipeSerializer
+from .serializers import (
+    IngredientSerializer,
+    RecipeManageSerializer,
+    RecipeSerializer,
+)
 
 logger = getLogger(__name__)
 
@@ -50,6 +54,60 @@ class RecipeViewSet(viewsets.ModelViewSet):
     ordering_fields = ["created_at", "modified_at", "name"]
     serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        """
+        Use RecipeManageSerializer for POST (create) and PUT/PATCH (update).
+        Use RecipeSerializer for list/retrieve (read-only).
+
+        This follows DRF best practice of using different serializers for
+        different operations.
+        """
+        if self.action in ("create", "update", "partial_update"):
+            return RecipeManageSerializer
+        return RecipeSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Override create to handle validation and response for new recipes.
+
+        Flow:
+        1. Use RecipeManageSerializer to validate nested data
+        2. Call serializer.save() which runs serializer.create()
+        3. All database operations in serializer.create() are atomic
+        4. Return created recipe using read serializer (RecipeSerializer)
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # serializer.create() does all the work (see Phase 1.4)
+        recipe = serializer.save()
+
+        # Return using read serializer for full recipe data
+        read_serializer = RecipeSerializer(recipe)
+        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Override update to handle validation and response for recipe edits.
+
+        Flow:
+        1. Get existing recipe instance
+        2. Use RecipeManageSerializer to validate nested data
+        3. Call serializer.save(instance=recipe) which runs serializer.update()
+        4. All database operations in serializer.update() are atomic
+        5. Return updated recipe using read serializer (RecipeSerializer)
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # serializer.update() does all the work (see Phase 1.4)
+        recipe = serializer.save()
+
+        # Return using read serializer for full recipe data
+        read_serializer = RecipeSerializer(recipe)
+        return Response(read_serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["post"])
     def backup_recipes(self, request: Request):
