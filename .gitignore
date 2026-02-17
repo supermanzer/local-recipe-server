@@ -134,4 +134,4 @@ dmypy.json
 .vscode/
 
 # Claude project files
-.claude
+.claudedocker-compose.override.yml
