@@ -185,10 +185,20 @@ ENV_HOST = f"{os.getenv('NUXT_HOST')}{'' if os.getenv('NUXT_PORT') == '80' else 
 
 print("ENV HOST: " + ENV_HOST)
 
+# Allow CORS for local development
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # For local Nuxt development
-    ENV_HOST,
+    "http://localhost:3000",  # Local Nuxt dev server
+    "http://localhost:8585",  # Local gateway (if accessed directly)
+    "http://localhost:80",  # Gateway on default port
+    "http://localhost",  # Gateway (default port)
+    "http://localhost:8080",  # Gateway with custom port
+    "http://localhost:8443",  # Gateway HTTPS alternative
+    ENV_HOST,  # Environment-configured host
 ]
+
+# For development, you can also use this more permissive approach:
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins in development
 
 # Django REST Framework Settings
 # https://www.django-rest-framework.org/api-guide/settings/
@@ -225,9 +235,16 @@ SIMPLE_JWT = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
     },
     "root": {
@@ -238,6 +255,16 @@ LOGGING = {
         "recipes": {
             "handlers": ["console"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "my_recipes": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "propagate": False,
+        },
+        "api": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
             "propagate": False,
         },
     },

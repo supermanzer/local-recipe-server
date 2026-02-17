@@ -23,6 +23,8 @@
                              <v-autocomplete
                                v-model="selectedIngredients[index]"
                                :items="ingredientOptions"
+                               item-title="title"
+                               item-value="value"
                                label="Ingredients used in this step"
                                multiple
                                chips

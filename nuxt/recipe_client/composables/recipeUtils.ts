@@ -10,7 +10,7 @@ export const recipeUtils = () => {
     const config = useRuntimeConfig();
     let baseURL = config.public.baseURL;
     if (!baseURL) {
-        baseURL = "http://localhost:8585/api"
+        baseURL = "/api"
     }
     /**
      * Fetches all recipes from the API

@@ -24,6 +24,14 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify'],
   },
+  nitro: {
+    devProxy: {
+      '/api/': {
+        target: 'http://django2:8000/api/',
+        changeOrigin: true,
+      }
+    }
+  },
   modules: [
     '@nuxt/eslint',
     (_options, nuxt) => {

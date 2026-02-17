@@ -77,15 +77,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
         3. All database operations in serializer.create() are atomic
         4. Return created recipe using read serializer (RecipeSerializer)
         """
+        logger.info(f"GETTING SERIALISER WITH DATA:\n{request.data}")
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
+        logger.info("CHECKING VALIDITY OF DATA")
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response(
+                {"status": "failed", "message": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        logger.info("SAVING RECORD")
         # serializer.create() does all the work (see Phase 1.4)
-        recipe = serializer.save()
+        try:
+            recipe = serializer.save()
 
-        # Return using read serializer for full recipe data
-        read_serializer = RecipeSerializer(recipe)
-        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+            # Return using read serializer for full recipe data
+            read_serializer = RecipeSerializer(recipe)
+            return Response(
+                read_serializer.data, status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
 
     def update(self, request, *args, **kwargs):
         """
