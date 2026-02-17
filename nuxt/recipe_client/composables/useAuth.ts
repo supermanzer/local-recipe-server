@@ -57,7 +57,7 @@ export const useAuth = () => {
     const config = useRuntimeConfig()
     let baseURL = config.public.baseURL
     if (!baseURL) {
-        baseURL = "http://localhost:8585/api"
+        baseURL = "/api"
     }
 
 

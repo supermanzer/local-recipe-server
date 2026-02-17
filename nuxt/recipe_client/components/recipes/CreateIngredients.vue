@@ -11,12 +11,13 @@
                 <v-row>
                     <v-col>
                         <v-combobox
-                        v-model="ingredient.name"
+                        :model-value="ingredient.name"
                         label="Ingredient name"
                         :items="options"
                         item-title="name"
                         item-value="name"
                         density="compact"
+                        @update:model-value="(value) => updateIngredientName(index, value)"
                         />
                     </v-col>
                     <v-col>
@@ -66,6 +67,14 @@ interface Ingredient {
 
 const props = defineProps<{modelValue: Ingredient[], options: Ingredient[]}>();
 const emit = defineEmits(['update:modelValue']);
+
+const updateIngredientName = (index: number, value: any) => {
+    // Extract name if value is an object, otherwise use value as-is
+    const name = typeof value === 'object' && value !== null && value.name ? value.name : value;
+    const updated = [...props.modelValue];
+    updated[index].name = name;
+    emit('update:modelValue', updated);
+};
 
 const addIngredient = () => {
     emit('update:modelValue', [...props.modelValue, {name: '', amount: 0, unit: ''}])

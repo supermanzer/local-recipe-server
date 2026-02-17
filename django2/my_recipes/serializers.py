@@ -119,49 +119,59 @@ class RecipeManageSerializer(serializers.Serializer):
         - Step ordering: provided by frontend
         - Step-ingredient linking: uses ingredient_index to reference items
         """
-
+        logger.info(f"CREATING RECIPE WITH VALIDATED DATA:\n{validated_data}")
         with transaction.atomic():
-            # 1. Create recipe
-            recipe = Recipe.objects.create(name=validated_data["name"])
+            try:
+                # 1. Create recipe
+                recipe = Recipe.objects.create(name=validated_data["name"])
+                logger.info(f"SUCCESSFULLY CREATED RECIPE: {recipe.name}")
+                # 2. Create/link ingredients
+                ingredient_map = {}  # Maps ingredient_index → RecipeIngredient ID
 
-            # 2. Create/link ingredients
-            ingredient_map = {}  # Maps ingredient_index → RecipeIngredient ID
-
-            for ingredient_data in validated_data["ingredients"]:
-                # Get or create the base ingredient
-                ingredient, _ = Ingredient.objects.get_or_create(
-                    name=ingredient_data["name"]
-                )
-
-                # Create recipe ingredient link with amount/unit
-                recipe_ingredient = RecipeIngredient.objects.create(
-                    recipe=recipe,
-                    ingredient=ingredient,
-                    amount=ingredient_data["amount"],
-                    unit=ingredient_data.get("unit", ""),
-                )
-
-                # Store for step ingredient references
-                ingredient_map[len(ingredient_map)] = recipe_ingredient
-
-            # 3. Create steps and step-ingredient links
-            for step_data in validated_data["steps"]:
-                step = Step.objects.create(
-                    recipe=recipe,
-                    order=step_data["order"],
-                    step=step_data["step"],
-                )
-
-                # 4. Link ingredients to this step
-                for step_ingredient_ref in step_data.get("ingredients", []):
-                    ingredient_index = step_ingredient_ref["ingredient_index"]
-                    recipe_ingredient = ingredient_map[ingredient_index]
-
-                    StepIngredient.objects.create(
-                        step=step, ingredient=recipe_ingredient
+                for ingredient_data in validated_data["ingredients"]:
+                    logger.info(f"GET OR CREATE INGREDIENT: {ingredient_data}")
+                    # Get or create the base ingredient
+                    ingredient, _ = Ingredient.objects.get_or_create(
+                        name=ingredient_data["name"]
+                    )
+                    logger.info("CREATING RECIPE INGREDIENT")
+                    # Create recipe ingredient link with amount/unit
+                    recipe_ingredient = RecipeIngredient.objects.create(
+                        recipe=recipe,
+                        ingredient=ingredient,
+                        amount=ingredient_data["amount"],
+                        unit=ingredient_data.get("unit", ""),
                     )
 
-            return recipe
+                    # Store for step ingredient references
+                    ingredient_map[len(ingredient_map)] = recipe_ingredient
+
+                # 3. Create steps and step-ingredient links
+                for step_data in validated_data["steps"]:
+                    logger.info(f"CREATING RECIPE STEP WITH DATA:\n{step_data}")
+                    step = Step.objects.create(
+                        recipe=recipe,
+                        order=step_data["order"],
+                        step=step_data["step"],
+                    )
+
+                    # 4. Link ingredients to this step
+                    for step_ingredient_ref in step_data.get("ingredients", []):
+                        ingredient_index = step_ingredient_ref[
+                            "ingredient_index"
+                        ]
+                        recipe_ingredient = ingredient_map[ingredient_index]
+                        logger.info(
+                            f"CREATING STEP INGREDIENT WITH DATA:\nStep: {step}\nIngredient: {recipe_ingredient}"
+                        )
+                        StepIngredient.objects.create(
+                            step=step, ingredient=recipe_ingredient
+                        )
+                logger.info("RECIPE CREATED")
+                return recipe
+            except Exception as e:
+                logger.error(f"ERROR CREATING RECIPE:\n{e}")
+                raise ValueError(str(e))
 
     def update(self, instance, validated_data):
         """
@@ -181,49 +191,64 @@ class RecipeManageSerializer(serializers.Serializer):
         """
 
         with transaction.atomic():
-            # 1. Update recipe name
-            instance.name = validated_data["name"]
-            instance.save()
-
-            # 2. Delete old ingredients and steps (this cascades to StepIngredients)
-            instance.recipeingredient_set.all().delete()
-            instance.recipe_steps.all().delete()
-
-            # 3. Create/link ingredients (same logic as create)
-            ingredient_map = {}
-
-            for ingredient_data in validated_data["ingredients"]:
-                # Get or create the base ingredient
-                ingredient, _ = Ingredient.objects.get_or_create(
-                    name=ingredient_data["name"]
+            try:
+                logger.info(
+                    f"UPDATING RECIPE WITH VALIDATED DATA:\n{validated_data}"
                 )
+                # 1. Update recipe name
+                instance.name = validated_data["name"]
+                instance.save()
+                logger.info("DELETING EXISTING RELATED RECORDS")
+                # 2. Delete old ingredients and steps (this cascades to StepIngredients)
+                instance.recipeingredient_set.all().delete()
+                instance.recipe_steps.all().delete()
 
-                # Create recipe ingredient link with amount/unit
-                recipe_ingredient = RecipeIngredient.objects.create(
-                    recipe=instance,
-                    ingredient=ingredient,
-                    amount=ingredient_data["amount"],
-                    unit=ingredient_data.get("unit", ""),
-                )
+                # 3. Create/link ingredients (same logic as create)
+                ingredient_map = {}
 
-                # Store for step ingredient references
-                ingredient_map[len(ingredient_map)] = recipe_ingredient
-
-            # 4. Create steps and step-ingredient links (same logic as create)
-            for step_data in validated_data["steps"]:
-                step = Step.objects.create(
-                    recipe=instance,
-                    order=step_data["order"],
-                    step=step_data["step"],
-                )
-
-                # Link ingredients to this step
-                for step_ingredient_ref in step_data.get("ingredients", []):
-                    ingredient_index = step_ingredient_ref["ingredient_index"]
-                    recipe_ingredient = ingredient_map[ingredient_index]
-
-                    StepIngredient.objects.create(
-                        step=step, ingredient=recipe_ingredient
+                for ingredient_data in validated_data["ingredients"]:
+                    logger.info(
+                        f"CREATING OR RETREIVING INGREDIENT: {ingredient_data}"
+                    )
+                    # Get or create the base ingredient
+                    ingredient, _ = Ingredient.objects.get_or_create(
+                        name=ingredient_data["name"]
+                    )
+                    logger.info("CREATING RECIPE INGREDIENT RECORD")
+                    # Create recipe ingredient link with amount/unit
+                    recipe_ingredient = RecipeIngredient.objects.create(
+                        recipe=instance,
+                        ingredient=ingredient,
+                        amount=ingredient_data["amount"],
+                        unit=ingredient_data.get("unit", ""),
                     )
 
-            return instance
+                    # Store for step ingredient references
+                    ingredient_map[len(ingredient_map)] = recipe_ingredient
+
+                # 4. Create steps and step-ingredient links (same logic as create)
+                for step_data in validated_data["steps"]:
+                    logger.info(f"CREATING STEP RECORD WITH DATA:\n{step_data}")
+                    step = Step.objects.create(
+                        recipe=instance,
+                        order=step_data["order"],
+                        step=step_data["step"],
+                    )
+
+                    # Link ingredients to this step
+                    for step_ingredient_ref in step_data.get("ingredients", []):
+                        ingredient_index = step_ingredient_ref[
+                            "ingredient_index"
+                        ]
+                        recipe_ingredient = ingredient_map[ingredient_index]
+                        logger.info(
+                            f"CREATING STEP INGREDIENT WITH DATA:\nStep: {step}\nIngredient: {recipe_ingredient}"
+                        )
+                        StepIngredient.objects.create(
+                            step=step, ingredient=recipe_ingredient
+                        )
+                logger.info("SUCCESSFULLY CREATED RECIPE")
+                return instance
+            except Exception as e:
+                logger.error(f"ERROR UPDATING RECIPE:\n{e}")
+                raise ValueError(str(e))
