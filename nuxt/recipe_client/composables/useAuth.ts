@@ -55,6 +55,7 @@ const getErrorMessage = (error: any): string => {
 
 export const useAuth = () => {
     const config = useRuntimeConfig()
+    const { $api } = useNuxtApp();
     let baseURL = config.public.baseURL
     if (!baseURL) {
         baseURL = "/api"
@@ -82,7 +83,7 @@ export const useAuth = () => {
 
     const login = async (credentials: LoginCredentials) => {
         try {
-            const data = await $fetch<TokenResponse>('/token/', {
+            const data = await $api<TokenResponse>('/token/', {
                 baseURL,
                 method: "POST",
                 body: credentials
@@ -127,7 +128,7 @@ export const useAuth = () => {
         try {
             console.log("MAKING REQUEST FOR FRESH ACCESS TOKEN");
             // This endpoint _only_ returns the access token
-            const { access } = await $fetch<TokenResponse>('/token/refresh/', {
+            const { access } = await $api<TokenResponse>('/token/refresh/', {
                 baseURL,
                 method: 'POST',
                 body: { refresh: refreshToken.value },

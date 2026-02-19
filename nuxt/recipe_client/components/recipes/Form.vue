@@ -43,7 +43,7 @@ import type { RecipeCreatePayload, Ingredient } from '~/types/recipe.types';
 import CreateIngredients from './CreateIngredients.vue';
 import CreateSteps from './CreateSteps.vue';
 
-const {createRecipe, updateRecipe, getRecipe, getIngredients} = recipeUtils();
+const {createRecipe, updateRecipe, getRecipe, getIngredients, convertRecipeToFormData} = recipeUtils();
 
 const route = useRoute()
 const recipeId = route.params.id ? parseInt(route.params.id as string) : null;
@@ -88,12 +88,20 @@ const submitRecipe = async() => {
     }
 }
 
+
+
 onMounted( async() => {
     if (isEditMode && recipeId) {
         const recipe = await getRecipe(recipeId.toString());
-        formData.value.name = recipe.name;
-        formData.value.ingredients = recipe.ingredients;
-        formData.value.steps = recipe.recipe_steps;
+        console.log("GOT RECIPE:\n", recipe);
+        
+        const formRecipe = convertRecipeToFormData(recipe)
+        console.log("CONVERTED TO FORM DATA FORMAT:\n", formRecipe);
+        
+        formData.value.name = formRecipe.name;
+        formData.value.ingredients = formRecipe.ingredients;
+
+        formData.value.steps = formRecipe.steps;
     }
     ingredientOptions.value = await getIngredients();
 })
