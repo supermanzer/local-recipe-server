@@ -95,7 +95,7 @@ export const recipeUtils = () => {
             name: recipe.name,
             // Flatten ingredients: transform from RecipeIngredient to RecipeIngredientInput
             ingredients: recipe.ingredients.map(recipeIngredient => ({
-                name: recipeIngredient.ingredient.name,
+                name: recipeIngredient.name,
                 amount: Number(recipeIngredient.amount),
                 unit: recipeIngredient.unit || ''
             })),
@@ -107,7 +107,7 @@ export const recipeUtils = () => {
                 ingredients: step.step_ingredients.map(stepIngredient => ({
                     ingredient_index: recipe.ingredients.findIndex(
                         recipeIngredient =>
-                            recipeIngredient.ingredient.id === stepIngredient.ingredient.id
+                            recipeIngredient.id === stepIngredient.ingredient.id
                     )
                 }))
             }))

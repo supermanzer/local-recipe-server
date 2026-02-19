@@ -24,9 +24,13 @@ export interface RecipeStep {
     id?: number;
     order: number;
     step: string;
-    ingredients: RecipeIngredient[];
+    step_ingredients: StepIngredient[];
 }
 
+export interface StepIngredient {
+    id?: number;
+    ingredient: RecipeIngredient
+}
 /**
  * Represents a paginated response containing recipe data
  * @interface PaginatedRecipeResponse
