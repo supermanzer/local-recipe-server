@@ -120,6 +120,12 @@ export const recipeUtils = () => {
         return response
     }
 
+    const goToRecipe = async (id: number) => {
+        await navigateTo({
+            path: `/recipes/${id}`,
+        })
+    }
+
     const updateRecipe = async (recipeId: number, recipeData: RecipeCreatePayload): Promise<Recipe> => {
         console.log("GOT UPDATE REQUEST FOR RECIPE ", recipeId);
         console.log("RECIPE DATA:\n", recipeData);
@@ -139,5 +145,6 @@ export const recipeUtils = () => {
         convertRecipeToFormData,
         createRecipe,
         updateRecipe,
+        goToRecipe
     }
 }

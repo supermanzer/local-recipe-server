@@ -2,12 +2,17 @@
     <div>
         <p class="text-h1">Recipes</p>
         <recipes-search-bar @ingedient-selected="filterRecipes" />
-        <recipes-list-view v-if="recipes" :recipes="recipes" />
+        <recipes-list-view v-if="recipes" :recipes="recipes" :selected-ingredient-names="selectedIngredientNames" />
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Recipe } from '~/types/recipe.types';
+
+interface FilterData {
+    ids: number[];
+    names: string[];
+}
 
 definePageMeta({
     name: "RecipesHome",
@@ -18,6 +23,7 @@ definePageMeta({
 const {getRecipes, searchRecipes} = recipeUtils();
 
 const recipes = ref<Recipe[]>([]);
+const selectedIngredientNames = ref<string[]>([])
 
 const {data, error} = await useAsyncData('recipes',() => getRecipes());
 
@@ -27,9 +33,10 @@ if (data.value) {
     console.log("GOT ERROR: ", error)
 }
 
-const filterRecipes = async (ids: number[]) => {
+const filterRecipes = async (data: FilterData) => {
     console.log("Filtering recipes!");
-    
+    const ids = data.ids
+    selectedIngredientNames.value = data.names
     const filtered = await searchRecipes(ids);
     recipes.value = filtered;
     console.log("Recipes filtered to: ", filtered);

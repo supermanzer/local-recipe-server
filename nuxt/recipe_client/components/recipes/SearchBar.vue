@@ -43,7 +43,12 @@ if (error) {
 
 const selectIngredient = () => {
     const ingredient_ids = state.ingrediengs.map((o) => o.id);
-    emits('ingedientSelected', ingredient_ids)
+    const inredient_names = state.ingrediengs.map((o) => o.name);
+    const data = {
+        ids: ingredient_ids,
+        names: inredient_names
+    }
+    emits('ingedientSelected', data)
 }
 
 </script>

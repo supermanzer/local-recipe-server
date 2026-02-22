@@ -250,6 +250,7 @@ export const useAuth = () => {
             // If refresh failed, log out and re-throw the original error
             if (!refreshSucceeded) {
                 console.log("Token refresh failed, user needs to login again");
+                navigateTo('/login')
                 throw error
             }
 

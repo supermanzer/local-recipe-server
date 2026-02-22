@@ -4,10 +4,11 @@
  */
 
 export default defineNuxtPlugin((nuxtApp) => {
-    console.log("Adding Auth API refresh");
+    console.log("Adding Auth API Wrapper");
 
     const $api = $fetch.create({
         onResponse({ response }) {
+            console.log("GOT API RESPONSE:\n", response)
             if (response.status === 401 || response.status === 403) {
                 console.log("REDIRECTING CLIENT TO LOGIN");
 
@@ -15,6 +16,8 @@ export default defineNuxtPlugin((nuxtApp) => {
             }
         },
         onResponseError({ response }) {
+            console.log("GOT API ERROR:\n", response);
+
             if (response.status === 401 || response.status === 403) {
                 console.log("REDIRECTING CLIENT TO LOGIN");
                 navigateTo('/login')
