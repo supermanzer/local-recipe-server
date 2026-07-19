@@ -133,6 +133,7 @@ dmypy.json
 .idea/
 .vscode/
 
-# Claude project files
-.claude
+# Claude project files (CLAUDE.md is tracked; other local Claude Code state is not)
+.claude/*
+!.claude/CLAUDE.md
 docker-compose.override.yml
