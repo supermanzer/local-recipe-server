@@ -103,6 +103,7 @@ export const recipeUtils = () => {
             steps: recipe.recipe_steps.map(step => ({
                 order: step.order,
                 step: step.step,
+                component: step.component,
                 // For each ingredient used in this step, find its index in the flattened ingredients array
                 ingredients: step.step_ingredients.map(stepIngredient => ({
                     ingredient_index: recipe.ingredients.findIndex(

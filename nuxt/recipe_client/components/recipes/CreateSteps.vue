@@ -54,7 +54,7 @@ const addStep = () => {
     const newOrder = Math.max(...props.modelValue.map(s => s.order), 0) + 1
     emit('update:modelValue', [
         ...props.modelValue,
-        { order: newOrder, step: '', ingredients: [] }
+        { order: newOrder, step: '', component: null, ingredients: [] }
     ])
 }
 

@@ -24,6 +24,8 @@ export interface RecipeStep {
     id?: number;
     order: number;
     step: string;
+    /** Optional heading used to group steps under a recipe component/section (e.g. "For the sauce") */
+    component: string | null;
     step_ingredients: StepIngredient[];
 }
 
@@ -90,6 +92,8 @@ export interface StepIngredientReference {
 export interface RecipeStepInput {
     order: number;
     step: string;
+    /** Optional heading used to group steps under a recipe component/section (e.g. "For the sauce") */
+    component?: string | null;
     ingredients: StepIngredientReference[];
 }
 

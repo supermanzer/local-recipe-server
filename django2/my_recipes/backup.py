@@ -64,6 +64,7 @@ class RecipeBackup:
                 {
                     "order": step.order,
                     "step": step.step,
+                    "component": step.component,
                     "ingredients": step_ingredients,
                 }
             )
@@ -239,6 +240,7 @@ class RecipeBackup:
                 recipe=recipe,
                 order=step_data["order"],
                 step=step_data["step"],
+                component=step_data.get("component") or None,
             )
             logger.debug(f"    Step {step_data['order']} created in database")
 

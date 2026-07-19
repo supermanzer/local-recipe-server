@@ -39,7 +39,9 @@ class Step(models.Model):
     )
     order = models.PositiveIntegerField()
     step = models.TextField()
-    # TODO: Add M2M relationship with Ingredient model - this will allow for highlighting which ingredients in the Recipe Ingredient relationship pertain to this step
+    component = models.CharField(
+        max_length=255, null=True, blank=True, default=None
+    )
 
     def __str__(self) -> str:
         return f"{self.order} - {self.step}"

@@ -289,7 +289,7 @@ Then access frontend at the exposed dev server URL. Note: This runs within the c
 - **Nuxt Build Time**: API_BASE must be set before build; changing it requires rebuild.
 - **`k8s/` is legacy**: leftover manifests from an earlier Raspberry Pi/microk8s deployment attempt. Production hosting is now a DigitalOcean droplet via `docker-compose.yml` + the `gateway/` Nginx config. Don't extend or maintain the k8s manifests without checking with the project owner first.
 - **Unwired `register` endpoint**: `my_recipes/auth_views.py:register` is dead code — not registered in any `urlpatterns`. If you're asked to add self-service signup, this is the natural starting point, but it needs a URL route added.
-- **`tesseract-ocr`/`libtesseract-dev`** are installed in `django2/Dockerfile` but no OCR Python package (e.g. `pytesseract`) is in `requirements.txt` and no OCR code exists yet — likely provisioned ahead of a planned-but-unimplemented feature (e.g. scanning recipe cards).
+- **`tesseract-ocr`/`libtesseract-dev`** are installed in `django2/Dockerfile` but no OCR Python package (e.g. `pytesseract`) is in `requirements.txt` and no OCR code exists yet. This is intentional pre-provisioning: a long-term project goal is letting users upload a PDF or photo of a recipe and OCR it into structured ingredients/steps. Not scheduled yet — no plan or serializer/view work has started.
 
 ## Dependencies
 

@@ -1,6 +1,17 @@
 <template>
     <v-list-item>
         <v-row>
+            <v-col cols="12">
+                <v-text-field
+                    :model-value="step.component"
+                    label="Section heading (optional, e.g. &quot;For the sauce&quot;)"
+                    density="compact"
+                    clearable
+                    @update:model-value="updateComponent"
+                />
+            </v-col>
+        </v-row>
+        <v-row>
             <v-col cols="1">
                 <v-text-field
                     :model-value="step.order"
@@ -97,6 +108,14 @@ const updateStepText = (newText: string) => {
     emit('update:step', {
         ...props.step,
         step: newText
+    })
+}
+
+// Emit updated step when the section heading changes
+const updateComponent = (newComponent: string | null) => {
+    emit('update:step', {
+        ...props.step,
+        component: newComponent || null
     })
 }
 

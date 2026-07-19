@@ -35,7 +35,7 @@ class StepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Step
-        fields = ["id", "order", "step", "step_ingredients"]
+        fields = ["id", "order", "step", "component", "step_ingredients"]
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -90,6 +90,9 @@ class StepInputSerializer(serializers.Serializer):
 
     order = serializers.IntegerField(min_value=1)
     step = serializers.CharField()
+    component = serializers.CharField(
+        max_length=255, required=False, allow_null=True, allow_blank=True
+    )
     ingredients = StepIngredientReferenceSerializer(many=True, required=False)
 
 
@@ -153,6 +156,7 @@ class RecipeManageSerializer(serializers.Serializer):
                         recipe=recipe,
                         order=step_data["order"],
                         step=step_data["step"],
+                        component=step_data.get("component") or None,
                     )
 
                     # 4. Link ingredients to this step
@@ -233,6 +237,7 @@ class RecipeManageSerializer(serializers.Serializer):
                         recipe=instance,
                         order=step_data["order"],
                         step=step_data["step"],
+                        component=step_data.get("component") or None,
                     )
 
                     # Link ingredients to this step
