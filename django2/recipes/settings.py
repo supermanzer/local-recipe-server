@@ -193,6 +193,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",  # Gateway (default port)
     "http://localhost:8080",  # Gateway with custom port
     "http://localhost:8443",  # Gateway HTTPS alternative
+    "https://recipes.supermanzer.io",  # Production frontend
+    "https://www.recipes.supermanzer.io",
     ENV_HOST,  # Environment-configured host
 ]
 
